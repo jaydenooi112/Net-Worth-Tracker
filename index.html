@@ -6,274 +6,269 @@
 <title>Net worth</title>
 <link rel="icon" href="data:,">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+ 
   * { box-sizing: border-box; }
-
+ 
+  :root {
+    --bg: #0B0E11;
+    --surface: #12161C;
+    --surface-2: #181D25;
+    --border: #232A34;
+    --text: #EDEFF2;
+    --text-dim: #8B93A1;
+    --text-faint: #565E6B;
+    --up: #3DDC97;
+    --down: #F0555A;
+  }
+ 
   body {
     margin: 0;
-    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
-    background: #121212;
-    color: #F2F0EA;
+    font-family: 'Manrope', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
-    padding: 40px 20px 80px;
   }
-
-  .wrap { max-width: 460px; margin: 0 auto; }
-
-  .eyebrow { font-size: 13px; letter-spacing: 0.02em; color: #8A867C; margin: 0 0 4px; }
-
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 48px;
-    line-height: 1.05;
-    margin: 0 0 10px;
-    color: #F2F0EA;
+ 
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+ 
+  .app { max-width: 1120px; margin: 0 auto; padding: 32px 24px 80px; }
+ 
+  .topbar { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 28px; }
+  .topbar h2 { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .topbar .subtitle { font-size: 13px; color: var(--text-dim); margin: 2px 0 0; }
+ 
+  .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
   }
-  h1.negative { color: #E2836B; }
-
-  .sub { font-size: 14px; color: #A8A498; margin: 0 0 8px; }
-  .change-line { font-size: 13px; margin: 0 0 28px; }
-  .change-up { color: #7FBF8E; }
-  .change-down { color: #E2836B; }
-  .change-flat { color: #8A867C; }
-
-  .trend-section { margin-bottom: 32px; }
-  .trend-label { font-size: 12px; color: #8A867C; margin: 0 0 8px; display: flex; justify-content: space-between; }
-  .trend-empty { font-size: 13px; color: #6E6A60; padding: 20px 0; }
-
-  .pie-section {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    margin-bottom: 32px;
+  .metric-label { font-size: 12px; color: var(--text-dim); margin: 0 0 8px; }
+  .metric-value { font-size: 24px; font-weight: 600; margin: 0; }
+  .metric-value.negative { color: var(--down); }
+  .metric-sub { font-size: 12px; margin: 6px 0 0; }
+  .metric-sub.up { color: var(--up); }
+  .metric-sub.down { color: var(--down); }
+  .metric-sub.flat { color: var(--text-faint); }
+ 
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 20px 8px;
+    margin-bottom: 20px;
   }
-
-  .pie {
-    width: 148px;
-    height: 148px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: #1C1C1E;
-  }
-
-  .legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
-  }
-  .legend-left { display: flex; align-items: center; gap: 8px; color: #C9C5B9; }
-  .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
-  .legend-value { font-variant-numeric: tabular-nums; color: #F2F0EA; }
-
-  .toggle {
-    display: inline-flex;
-    border: 1px solid #34322C;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 28px;
-  }
-  .toggle button {
-    font-family: 'IBM Plex Sans', sans-serif;
-    background: transparent;
-    color: #8A867C;
-    border: none;
-    padding: 6px 16px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .toggle button.active { background: #2C2A24; color: #F2F0EA; }
-
-  .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 0 12px;
-  }
-  .count { font-size: 13px; color: #8A867C; }
-
-  .btn {
-    font-family: 'IBM Plex Sans', sans-serif;
-    border: 1px solid #34322C;
-    background: transparent;
-    color: #F2F0EA;
-    border-radius: 6px;
-    padding: 8px 14px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .btn:hover { background: #F2F0EA; color: #121212; border-color: #F2F0EA; }
-
-  .btn-icon {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #8A867C;
-    font-size: 12px;
-    padding: 4px 8px;
-    font-family: 'IBM Plex Sans', sans-serif;
-  }
-  .btn-icon:hover { color: #F2F0EA; text-decoration: underline; }
-
-  .panel {
-    background: #1C1C1E;
-    border: 1px solid #2C2A24;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 0 0 24px;
+  .chart-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--text); margin: 0; }
+  .chart-range { font-size: 12px; color: var(--text-faint); }
+  .chart-empty { font-size: 13px; color: var(--text-faint); padding: 50px 0; text-align: center; }
+  .chart-wrap { position: relative; }
+  #tooltip {
+    position: absolute;
     display: none;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    pointer-events: none;
+    transform: translate(-50%, -110%);
+    white-space: nowrap;
+    z-index: 5;
   }
+  #tooltip .tt-date { color: var(--text-faint); margin-bottom: 2px; }
+  #tooltip .tt-value { font-weight: 600; }
+ 
+  .lower-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
+ 
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card-title { font-size: 13px; font-weight: 600; margin: 0 0 16px; }
+ 
+  .pie-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+  .pie { width: 156px; height: 156px; border-radius: 50%; background: var(--surface-2); }
+ 
+  .toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  .toggle button {
+    font-family: 'Manrope', sans-serif; background: transparent; color: var(--text-dim);
+    border: none; padding: 5px 14px; font-size: 12px; cursor: pointer;
+  }
+  .toggle button.active { background: var(--surface-2); color: var(--text); }
+ 
+  .legend { display: flex; flex-direction: column; gap: 10px; }
+  .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+  .legend-left { display: flex; align-items: center; gap: 8px; color: var(--text-dim); }
+  .swatch { width: 8px; height: 8px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+  .legend-value { color: var(--text); }
+ 
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .count { font-size: 13px; color: var(--text-dim); }
+ 
+  .btn {
+    font-family: 'Manrope', sans-serif; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--text); border-radius: 7px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-weight: 500;
+  }
+  .btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+ 
+  .btn-icon {
+    border: none; background: transparent; cursor: pointer; color: var(--text-faint);
+    font-size: 12px; padding: 4px 8px; font-family: 'Manrope', sans-serif;
+  }
+  .btn-icon:hover { color: var(--text); text-decoration: underline; }
+ 
+  .panel { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 0 0 18px; display: none; }
   .panel.open { display: block; }
-
+ 
   .field { margin-bottom: 12px; }
-  .field label { font-size: 12px; color: #8A867C; display: block; margin-bottom: 4px; }
+  .field label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 5px; }
   .field-row { display: flex; gap: 12px; }
   .field-row .field { flex: 1; }
-
+ 
   input, select {
-    font-family: 'IBM Plex Sans', sans-serif;
-    border: 1px solid #34322C;
-    background: #121212;
-    border-radius: 6px;
-    padding: 9px 10px;
-    font-size: 14px;
-    color: #F2F0EA;
-    width: 100%;
+    font-family: 'Manrope', sans-serif; border: 1px solid var(--border); background: var(--bg);
+    border-radius: 6px; padding: 9px 10px; font-size: 14px; color: var(--text); width: 100%;
   }
-  input:focus, select:focus { outline: none; border-color: #6FA88A; }
-
-  .hint { font-size: 11px; color: #6E6A60; margin-top: 4px; }
-
-  .error { font-size: 13px; color: #E2836B; margin: 0 0 12px; }
-
-  .empty {
-    border: 1px dashed #34322C;
-    border-radius: 10px;
-    padding: 32px 20px;
-    text-align: center;
-    color: #8A867C;
-    font-size: 14px;
-    display: none;
-  }
+  input:focus, select:focus { outline: none; border-color: var(--up); }
+  .hint { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+  .error { font-size: 13px; color: var(--down); margin: 0 0 12px; }
+ 
+  .empty { border: 1px dashed var(--border); border-radius: 10px; padding: 32px 20px; text-align: center; color: var(--text-dim); font-size: 14px; display: none; }
   .empty.show { display: block; }
-
-  .category-block { margin-bottom: 22px; }
-
-  .category-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 0 2px 8px;
+ 
+  .category-block { margin-bottom: 20px; }
+  .category-head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 2px 8px; }
+  .category-name { font-size: 12px; font-weight: 600; letter-spacing: 0.01em; }
+  .category-subtotal { font-size: 12px; color: var(--text-dim); }
+ 
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--surface-2); border-radius: 9px; padding: 12px 14px; margin-bottom: 7px;
   }
-  .category-name { font-size: 12px; font-weight: 500; letter-spacing: 0.01em; }
-  .category-subtotal { font-size: 12px; color: #8A867C; }
-
-  .card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #1C1C1E;
-    border-radius: 10px;
-    padding: 14px 14px;
-    margin-bottom: 8px;
-  }
-
-  .card-left { display: flex; align-items: center; gap: 12px; }
-  .card-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
-  .card-name-block { display: flex; flex-direction: column; }
-  .card-name { font-size: 15px; color: #F2F0EA; }
-  .card-gain { font-size: 12px; margin-top: 2px; }
-
-  .card-right { display: flex; align-items: center; gap: 12px; }
-  .card-value { font-size: 15px; font-variant-numeric: tabular-nums; color: #F2F0EA; }
-  .card-value.liability { color: #E2836B; }
-
+  .row-left { display: flex; align-items: center; gap: 11px; }
+  .row-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .row-name-block { display: flex; flex-direction: column; }
+  .row-name { font-size: 14px; color: var(--text); }
+  .row-gain { font-size: 12px; margin-top: 2px; }
+  .row-right { display: flex; align-items: center; gap: 12px; }
+  .row-value { font-size: 14px; color: var(--text); }
+  .row-value.liability { color: var(--down); }
   .actions { display: flex; gap: 2px; }
-
-  .footnote { font-size: 12px; color: #6E6A60; margin-top: 32px; }
+ 
+  .footnote { font-size: 12px; color: var(--text-faint); margin-top: 24px; }
+ 
+  @media (max-width: 760px) {
+    .app { padding: 20px 16px 60px; }
+    .metrics-row { grid-template-columns: 1fr; gap: 10px; }
+    .metric-value { font-size: 22px; }
+    .lower-grid { grid-template-columns: 1fr; }
+    .pie-wrap { margin-bottom: 14px; }
+  }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <p class="eyebrow">Net worth</p>
-    <h1 id="netWorth">$0</h1>
-    <p class="sub" id="subLine">Assets $0 &middot; Liabilities $0</p>
-    <p class="change-line" id="changeLine"></p>
-
-    <div class="trend-section">
-      <div class="trend-label">
-        <span>Trend</span>
-        <span id="trendRange"></span>
+  <div class="app">
+    <div class="topbar">
+      <div>
+        <h2>Net worth</h2>
+        <p class="subtitle">Personal finance overview</p>
       </div>
-      <div id="trendChart"></div>
     </div>
-
-    <div class="pie-section" id="pieSection" style="display:none;">
-      <div class="pie" id="pie"></div>
-      <div class="legend" id="legend"></div>
-    </div>
-
-    <div class="toggle" id="modeToggle">
-      <button data-mode="dollar" class="active">$</button>
-      <button data-mode="percent">%</button>
-    </div>
-
-    <div class="toolbar">
-      <span class="count" id="accountCount">0 accounts</span>
-      <button class="btn" id="addBtn">Add account</button>
-    </div>
-
-    <form class="panel" id="panel">
-      <div class="field">
-        <label for="nameInput">Account name</label>
-        <input id="nameInput" placeholder="Emergency savings" />
+ 
+    <div class="metrics-row">
+      <div class="metric-card">
+        <p class="metric-label">Net worth</p>
+        <p class="metric-value mono" id="netWorth">$0</p>
+        <p class="metric-sub" id="changeLine"></p>
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="categoryInput">Category</label>
-          <select id="categoryInput"></select>
+      <div class="metric-card">
+        <p class="metric-label">Total assets</p>
+        <p class="metric-value mono" id="totalAssets">$0</p>
+      </div>
+      <div class="metric-card">
+        <p class="metric-label">Total liabilities</p>
+        <p class="metric-value mono" id="totalLiabilities">$0</p>
+      </div>
+    </div>
+ 
+    <div class="chart-card">
+      <div class="chart-head">
+        <p class="chart-title">Equity over time</p>
+        <span class="chart-range mono" id="trendRange"></span>
+      </div>
+      <div class="chart-wrap" id="chartWrap">
+        <div id="tooltip"><div class="tt-date" id="ttDate"></div><div class="tt-value mono" id="ttValue"></div></div>
+        <div id="trendChart"></div>
+      </div>
+    </div>
+ 
+    <div class="lower-grid">
+      <div class="card">
+        <p class="card-title">Allocation</p>
+        <div class="pie-wrap"><div class="pie" id="pie"></div></div>
+        <div class="toggle" id="modeToggle">
+          <button data-mode="dollar" class="active">$</button>
+          <button data-mode="percent">%</button>
         </div>
-        <div class="field">
-          <label for="valueInput">Current value</label>
-          <input id="valueInput" type="number" min="0" step="0.01" placeholder="0" />
+        <div class="legend" id="legend"></div>
+      </div>
+ 
+      <div class="card">
+        <div class="toolbar">
+          <span class="count" id="accountCount">0 accounts</span>
+          <button class="btn" id="addBtn">Add account</button>
         </div>
+ 
+        <form class="panel" id="panel">
+          <div class="field">
+            <label for="nameInput">Account name</label>
+            <input id="nameInput" placeholder="Emergency savings" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="categoryInput">Category</label>
+              <select id="categoryInput"></select>
+            </div>
+            <div class="field">
+              <label for="valueInput">Current value</label>
+              <input id="valueInput" type="number" min="0" step="0.01" placeholder="0" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="costBasisInput">Cost basis (optional)</label>
+            <input id="costBasisInput" type="number" min="0" step="0.01" placeholder="0" />
+            <p class="hint">What you originally paid — used to show gain or loss.</p>
+          </div>
+          <p class="error" id="formError" style="display:none;"></p>
+          <div style="display:flex; gap:8px;">
+            <button type="submit" class="btn" id="submitBtn">Add account</button>
+            <button type="button" class="btn" id="cancelBtn">Cancel</button>
+          </div>
+        </form>
+ 
+        <div class="empty" id="emptyState">No accounts yet. Add your first one to see your net worth.</div>
+ 
+        <div id="categories"></div>
       </div>
-      <div class="field">
-        <label for="costBasisInput">Cost basis (optional)</label>
-        <input id="costBasisInput" type="number" min="0" step="0.01" placeholder="0" />
-        <p class="hint">What you originally paid — used to show gain or loss.</p>
-      </div>
-      <p class="error" id="formError" style="display:none;"></p>
-      <div style="display:flex; gap:8px;">
-        <button type="submit" class="btn" id="submitBtn">Add account</button>
-        <button type="button" class="btn" id="cancelBtn">Cancel</button>
-      </div>
-    </form>
-
-    <div class="empty" id="emptyState">No accounts yet. Add your first one to see your net worth.</div>
-
-    <div id="categories"></div>
-
-    <p class="footnote">Saved automatically to this browser on this device. The trend line only records the days you open this file — it can't back-fill days you didn't check in, and values only change when you update them here.</p>
+    </div>
+ 
+    <p class="footnote">Saved automatically to this browser on this device. The equity chart only records the days you open this page.</p>
   </div>
-
+ 
 <script>
   const CATEGORY_META = {
-    "Cash & bank":    { type: "asset",      color: "#8FBF98" },
-    "Investments":    { type: "asset",      color: "#5B9C6D" },
-    "Property":       { type: "asset",      color: "#3F7A52" },
-    "Crypto":         { type: "asset",      color: "#2E5B3F" },
-    "Other assets":   { type: "asset",      color: "#A9D2AF" },
-    "Credit cards":   { type: "liability",  color: "#D9614A" },
-    "Loans & debts":  { type: "liability",  color: "#B23A2A" },
+    "Cash & bank":    { type: "asset",      color: "#4C9AFF" },
+    "Investments":    { type: "asset",      color: "#36B37E" },
+    "Property":       { type: "asset",      color: "#FFAB00" },
+    "Crypto":         { type: "asset",      color: "#9F7AEA" },
+    "Other assets":   { type: "asset",      color: "#8C97A8" },
+    "Credit cards":   { type: "liability",  color: "#FF7452" },
+    "Loans & debts":  { type: "liability",  color: "#FF5630" },
   };
   const CATEGORY_ORDER = Object.keys(CATEGORY_META);
   const STORAGE_KEY = "networth-tracker-accounts";
   const HISTORY_KEY = "networth-tracker-history";
-
+ 
   function loadAccounts() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -287,33 +282,26 @@
       { id: "a5", name: "Car loan", category: "Loans & debts", value: 9800, costBasis: null },
     ];
   }
-
-  function saveAccounts() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts)); } catch (e) {}
-  }
-
+  function saveAccounts() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts)); } catch (e) {} }
   function loadHistory() {
-    try {
-      const raw = localStorage.getItem(HISTORY_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {}
+    try { const raw = localStorage.getItem(HISTORY_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
     return [];
   }
-
-  function saveHistory() {
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) {}
-  }
-
+  function saveHistory() { try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) {} }
   function todayStr() {
     const d = new Date();
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
-
+  function shortDate(s) {
+    const d = new Date(s + "T00:00:00");
+    return d.toLocaleDateString("en-AU", { day: "numeric", month: "short" });
+  }
+ 
   let accounts = loadAccounts();
   let history = loadHistory();
   let editingId = null;
   let mode = "dollar";
-
+ 
   const categorySelect = document.getElementById("categoryInput");
   CATEGORY_ORDER.forEach((cat) => {
     const opt = document.createElement("option");
@@ -321,13 +309,21 @@
     opt.textContent = cat;
     categorySelect.appendChild(opt);
   });
-
+ 
   function currency(n) {
     const v = Math.round(Number(n) || 0);
     const sign = v < 0 ? "-" : "";
     return sign + "$" + Math.abs(v).toLocaleString("en-AU");
   }
-
+  function currencyShort(n) {
+    const v = Number(n) || 0;
+    const abs = Math.abs(v);
+    const sign = v < 0 ? "-" : "";
+    if (abs >= 1000000) return sign + "$" + (abs / 1000000).toFixed(1) + "M";
+    if (abs >= 1000) return sign + "$" + (abs / 1000).toFixed(1) + "k";
+    return sign + "$" + abs.toFixed(0);
+  }
+ 
   function computeTotals() {
     let assets = 0, liabilities = 0;
     const byCategory = {};
@@ -339,7 +335,7 @@
     }
     return { assets, liabilities, net: assets - liabilities, byCategory };
   }
-
+ 
   function recordSnapshot(net) {
     const today = todayStr();
     if (history.length > 0 && history[history.length - 1].date === today) {
@@ -350,61 +346,113 @@
     if (history.length > 90) history = history.slice(history.length - 90);
     saveHistory();
   }
-
+ 
+  let chartPoints = [];
+ 
   function renderTrend(currentNet) {
     const el = document.getElementById("trendChart");
     const rangeEl = document.getElementById("trendRange");
     const changeEl = document.getElementById("changeLine");
-
+    chartPoints = [];
+ 
     if (history.length < 2) {
-      el.innerHTML = '<div class="trend-empty">Check in again tomorrow to start seeing a trend line.</div>';
+      el.innerHTML = '<div class="chart-empty">Check in again another day to start building your equity chart.</div>';
       rangeEl.textContent = "";
       changeEl.textContent = "";
+      changeEl.className = "metric-sub flat";
       return;
     }
-
-    rangeEl.textContent = history[0].date + " – " + history[history.length - 1].date;
-
+ 
+    rangeEl.textContent = shortDate(history[0].date) + " – " + shortDate(history[history.length - 1].date);
+ 
     const prev = history[history.length - 2].net;
     const diff = currentNet - prev;
     const pct = prev !== 0 ? (diff / Math.abs(prev)) * 100 : 0;
-    changeEl.className = "change-line " + (diff > 0 ? "change-up" : diff < 0 ? "change-down" : "change-flat");
-    changeEl.textContent = (diff >= 0 ? "+" : "-") + currency(Math.abs(diff)).replace("$", "$") + " (" + (diff >= 0 ? "+" : "") + pct.toFixed(1) + "%) since last check-in";
-
-    const w = 420, h = 90, pad = 8;
+    changeEl.className = "metric-sub " + (diff > 0 ? "up" : diff < 0 ? "down" : "flat");
+    changeEl.textContent = (diff >= 0 ? "+" : "-") + currency(Math.abs(diff)) + " (" + (diff >= 0 ? "+" : "") + pct.toFixed(1) + "%) since last check-in";
+ 
+    const w = 1000, h = 240, padL = 56, padR = 12, padT = 16, padB = 28;
     const values = history.map((p) => p.net);
-    const min = Math.min(...values);
+    const min = Math.min(...values, 0);
     const max = Math.max(...values);
     const range = (max - min) || 1;
-
-    const points = history.map((p, i) => {
-      const x = pad + (i / (history.length - 1)) * (w - pad * 2);
-      const y = h - pad - ((p.net - min) / range) * (h - pad * 2);
-      return x.toFixed(1) + "," + y.toFixed(1);
-    });
-
-    const lineColor = currentNet >= (history[0].net) ? "#7FBF8E" : "#E2836B";
-
+ 
+    const xFor = (i) => padL + (i / (history.length - 1)) * (w - padL - padR);
+    const yFor = (v) => padT + (h - padT - padB) - ((v - min) / range) * (h - padT - padB);
+ 
+    chartPoints = history.map((p, i) => ({ x: xFor(i), y: yFor(p.net), date: p.date, net: p.net }));
+ 
+    const linePts = chartPoints.map((p) => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+    const areaPts = "M " + chartPoints.map((p) => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" L ") +
+      " L " + xFor(history.length - 1).toFixed(1) + "," + (h - padB) + " L " + xFor(0).toFixed(1) + "," + (h - padB) + " Z";
+ 
+    const lineColor = currentNet >= history[0].net ? "#3DDC97" : "#F0555A";
+ 
+    const gridLines = [0, 0.25, 0.5, 0.75, 1].map((f) => {
+      const y = padT + f * (h - padT - padB);
+      const val = max - f * range;
+      return '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + y.toFixed(1) + '" stroke="#232A34" stroke-width="1" />' +
+        '<text x="' + (padL - 8) + '" y="' + (y + 4).toFixed(1) + '" fill="#565E6B" font-size="11" font-family="IBM Plex Mono, monospace" text-anchor="end">' + currencyShort(val) + '</text>';
+    }).join("");
+ 
     el.innerHTML =
-      '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '" preserveAspectRatio="none">' +
-      '<polyline points="' + points.join(" ") + '" fill="none" stroke="' + lineColor + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />' +
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="220" preserveAspectRatio="none" id="chartSvg">' +
+      gridLines +
+      '<path d="' + areaPts + '" fill="' + lineColor + '" fill-opacity="0.08" stroke="none" />' +
+      '<polyline points="' + linePts + '" fill="none" stroke="' + lineColor + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />' +
+      '<line id="hoverLine" x1="0" y1="' + padT + '" x2="0" y2="' + (h - padB) + '" stroke="#565E6B" stroke-width="1" stroke-dasharray="3,3" style="display:none" />' +
       '</svg>';
   }
-
+ 
+  function setupChartHover() {
+    const wrap = document.getElementById("chartWrap");
+    const tooltip = document.getElementById("tooltip");
+    wrap.addEventListener("mousemove", (e) => {
+      if (chartPoints.length === 0) return;
+      const svg = document.getElementById("chartSvg");
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const scaleX = 1000 / rect.width;
+      const localX = (e.clientX - rect.left) * scaleX;
+      let nearest = chartPoints[0];
+      let nearestDist = Infinity;
+      for (const p of chartPoints) {
+        const d = Math.abs(p.x - localX);
+        if (d < nearestDist) { nearestDist = d; nearest = p; }
+      }
+      const hoverLine = document.getElementById("hoverLine");
+      if (hoverLine) {
+        hoverLine.setAttribute("x1", nearest.x);
+        hoverLine.setAttribute("x2", nearest.x);
+        hoverLine.style.display = "block";
+      }
+      const px = (nearest.x / 1000) * rect.width + rect.left - wrap.getBoundingClientRect().left;
+      const py = (nearest.y / 240) * rect.height + rect.top - wrap.getBoundingClientRect().top;
+      tooltip.style.left = px + "px";
+      tooltip.style.top = py + "px";
+      tooltip.style.display = "block";
+      document.getElementById("ttDate").textContent = shortDate(nearest.date);
+      document.getElementById("ttValue").textContent = currency(nearest.net);
+    });
+    wrap.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+      const hoverLine = document.getElementById("hoverLine");
+      if (hoverLine) hoverLine.style.display = "none";
+    });
+  }
+ 
   function renderPie(totals) {
     const activeCats = CATEGORY_ORDER.filter((c) => totals.byCategory[c]);
     const pieEl = document.getElementById("pie");
     const legendEl = document.getElementById("legend");
-    const section = document.getElementById("pieSection");
-
+ 
     if (activeCats.length === 0) {
-      section.style.display = "none";
+      pieEl.style.background = "var(--surface-2)";
+      legendEl.innerHTML = "";
       return;
     }
-    section.style.display = "flex";
-
+ 
     const totalAbs = activeCats.reduce((sum, c) => sum + Math.abs(totals.byCategory[c]), 0) || 1;
-
     let cumulative = 0;
     const stops = activeCats.map((cat) => {
       const pct = (Math.abs(totals.byCategory[cat]) / totalAbs) * 100;
@@ -413,7 +461,7 @@
       return CATEGORY_META[cat].color + " " + start.toFixed(2) + "% " + cumulative.toFixed(2) + "%";
     });
     pieEl.style.background = "conic-gradient(" + stops.join(", ") + ")";
-
+ 
     legendEl.innerHTML = "";
     activeCats.forEach((cat) => {
       const v = totals.byCategory[cat];
@@ -423,26 +471,25 @@
       const displayValue = mode === "percent" ? Math.round(pct) + "%" : currency(v);
       item.innerHTML =
         '<span class="legend-left"><span class="swatch" style="background:' + CATEGORY_META[cat].color + '"></span>' + cat + '</span>' +
-        '<span class="legend-value">' + displayValue + '</span>';
+        '<span class="legend-value mono">' + displayValue + '</span>';
       legendEl.appendChild(item);
     });
   }
-
+ 
   function render(shouldSnapshot) {
     const totals = computeTotals();
     const netEl = document.getElementById("netWorth");
     netEl.textContent = currency(totals.net);
     netEl.classList.toggle("negative", totals.net < 0);
-    document.getElementById("subLine").textContent =
-      "Assets " + currency(totals.assets) + " · Liabilities " + currency(totals.liabilities);
-    document.getElementById("accountCount").textContent =
-      accounts.length + " account" + (accounts.length === 1 ? "" : "s");
+    document.getElementById("totalAssets").textContent = currency(totals.assets);
+    document.getElementById("totalLiabilities").textContent = currency(totals.liabilities);
+    document.getElementById("accountCount").textContent = accounts.length + " account" + (accounts.length === 1 ? "" : "s");
     document.getElementById("emptyState").classList.toggle("show", accounts.length === 0 && !document.getElementById("panel").classList.contains("open"));
-
+ 
     if (shouldSnapshot) recordSnapshot(totals.net);
     renderTrend(totals.net);
     renderPie(totals);
-
+ 
     const catsEl = document.getElementById("categories");
     catsEl.innerHTML = "";
     CATEGORY_ORDER.forEach((cat) => {
@@ -452,42 +499,41 @@
       const subtotal = totals.byCategory[cat] || 0;
       const block = document.createElement("div");
       block.className = "category-block";
-
+ 
       const head = document.createElement("div");
       head.className = "category-head";
       head.innerHTML =
         '<span class="category-name" style="color:' + meta.color + '">' + cat + "</span>" +
-        '<span class="category-subtotal">' + (meta.type === "liability" ? "-" : "") + currency(subtotal) + "</span>";
+        '<span class="category-subtotal mono">' + (meta.type === "liability" ? "-" : "") + currency(subtotal) + "</span>";
       block.appendChild(head);
-
+ 
       items.forEach((acc) => {
-        const card = document.createElement("div");
-        card.className = "card";
+        const row = document.createElement("div");
+        row.className = "row";
         let gainHtml = "";
         if (acc.costBasis !== null && acc.costBasis !== undefined && acc.costBasis !== "" && !isNaN(acc.costBasis)) {
           const gain = acc.value - acc.costBasis;
           const gainPct = acc.costBasis !== 0 ? (gain / acc.costBasis) * 100 : 0;
-          const cls = gain > 0 ? "change-up" : gain < 0 ? "change-down" : "change-flat";
-          gainHtml = '<span class="card-gain ' + cls + '">' + (gain >= 0 ? "+" : "-") + currency(Math.abs(gain)) + " (" + (gain >= 0 ? "+" : "") + gainPct.toFixed(1) + "%)</span>";
+          const cls = gain > 0 ? "up" : gain < 0 ? "down" : "flat";
+          gainHtml = '<span class="row-gain mono ' + (gain > 0 ? "" : gain < 0 ? "liability" : "") + '" style="color:' + (gain > 0 ? "#3DDC97" : gain < 0 ? "#F0555A" : "#565E6B") + '">' + (gain >= 0 ? "+" : "-") + currency(Math.abs(gain)) + " (" + (gain >= 0 ? "+" : "") + gainPct.toFixed(1) + "%)</span>";
         }
-        card.innerHTML =
-          '<div class="card-left"><span class="card-dot" style="background:' + meta.color + '"></span>' +
-          '<div class="card-name-block"><span class="card-name"></span>' + gainHtml + '</div></div>' +
-          '<div class="card-right">' +
-          '<span class="card-value ' + (meta.type === "liability" ? "liability" : "") + '"></span>' +
+        row.innerHTML =
+          '<div class="row-left"><span class="row-dot" style="background:' + meta.color + '"></span>' +
+          '<div class="row-name-block"><span class="row-name"></span>' + gainHtml + '</div></div>' +
+          '<div class="row-right">' +
+          '<span class="row-value mono ' + (meta.type === "liability" ? "liability" : "") + '"></span>' +
           '<div class="actions">' +
           '<button class="btn-icon" data-action="edit" data-id="' + acc.id + '">Edit</button>' +
           '<button class="btn-icon" data-action="delete" data-id="' + acc.id + '">Delete</button>' +
           "</div></div>";
-        card.querySelector(".card-name").textContent = acc.name;
-        card.querySelector(".card-value").textContent = (meta.type === "liability" ? "-" : "") + currency(acc.value);
-        block.appendChild(card);
+        row.querySelector(".row-name").textContent = acc.name;
+        row.querySelector(".row-value").textContent = (meta.type === "liability" ? "-" : "") + currency(acc.value);
+        block.appendChild(row);
       });
-
       catsEl.appendChild(block);
     });
   }
-
+ 
   function openPanel(acc) {
     document.getElementById("panel").classList.add("open");
     document.getElementById("formError").style.display = "none";
@@ -509,16 +555,15 @@
     document.getElementById("emptyState").classList.remove("show");
     document.getElementById("nameInput").focus();
   }
-
   function closePanel() {
     document.getElementById("panel").classList.remove("open");
     editingId = null;
     render(false);
   }
-
+ 
   document.getElementById("addBtn").addEventListener("click", () => openPanel(null));
   document.getElementById("cancelBtn").addEventListener("click", closePanel);
-
+ 
   document.getElementById("modeToggle").addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-mode]");
     if (!btn) return;
@@ -526,7 +571,7 @@
     document.querySelectorAll("#modeToggle button").forEach((b) => b.classList.toggle("active", b === btn));
     render(false);
   });
-
+ 
   document.getElementById("panel").addEventListener("submit", (e) => {
     e.preventDefault();
     const name = document.getElementById("nameInput").value.trim();
@@ -536,24 +581,12 @@
     const numValue = Number(rawValue);
     const numCostBasis = rawCostBasis === "" ? null : Number(rawCostBasis);
     const errorEl = document.getElementById("formError");
-
-    if (!name) {
-      errorEl.textContent = "Give the account a name.";
-      errorEl.style.display = "block";
-      return;
-    }
-    if (rawValue === "" || Number.isNaN(numValue) || numValue < 0) {
-      errorEl.textContent = "Enter a value of 0 or more.";
-      errorEl.style.display = "block";
-      return;
-    }
-    if (numCostBasis !== null && (Number.isNaN(numCostBasis) || numCostBasis < 0)) {
-      errorEl.textContent = "Cost basis must be 0 or more, or left blank.";
-      errorEl.style.display = "block";
-      return;
-    }
+ 
+    if (!name) { errorEl.textContent = "Give the account a name."; errorEl.style.display = "block"; return; }
+    if (rawValue === "" || Number.isNaN(numValue) || numValue < 0) { errorEl.textContent = "Enter a value of 0 or more."; errorEl.style.display = "block"; return; }
+    if (numCostBasis !== null && (Number.isNaN(numCostBasis) || numCostBasis < 0)) { errorEl.textContent = "Cost basis must be 0 or more, or left blank."; errorEl.style.display = "block"; return; }
     errorEl.style.display = "none";
-
+ 
     if (editingId) {
       accounts = accounts.map((a) => a.id === editingId ? { ...a, name, category, value: numValue, costBasis: numCostBasis } : a);
     } else {
@@ -564,7 +597,7 @@
     editingId = null;
     render(true);
   });
-
+ 
   document.getElementById("categories").addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
@@ -578,8 +611,10 @@
       if (acc) openPanel(acc);
     }
   });
-
+ 
+  setupChartHover();
   render(true);
 </script>
 </body>
 </html>
+ 
